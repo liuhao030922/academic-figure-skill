@@ -3,12 +3,13 @@
 [English](README.md) | **简体中文**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/liuhao030922/academic-figure-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/liuhao030922/academic-figure-skill/actions/workflows/ci.yml)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
 ![matplotlib 3.9+](https://img.shields.io/badge/matplotlib-3.9%2B-blue)
 ![Claude Skill](https://img.shields.io/badge/Claude-skill-d97757)
 
 一个 **Claude skill**，专门画能直接放进论文的 matplotlib 图。
-告诉 Claude 你要画什么，它会选合适的图表类型、按会议模板设定栏宽、匹配论文字体，交给你之前还会自己检查一遍。
+告诉 Claude 你要画什么，它会选合适的图表类型、按会议模板设定栏宽、使用面向会议的衬线字体回退，并在交付前检查结果。
 不用 Claude 时，也可以当作普通的 Python 样式模块使用。
 
 ![改造前后对比](assets/before_after.png)
@@ -25,7 +26,7 @@
 | | 只用样式文件（如 SciencePlots） | 本 skill |
 |---|---|---|
 | 按会议设定字体字号 | ✓ | ✓ IEEE · ACM · USENIX · ICML · NeurIPS · article |
-| 精确的单栏 / 双栏宽度 | — | ✓ `figsize("column", 2.2)` |
+| 按会议设定的单栏 / 双栏宽度 | — | ✓ `figsize("column", 2.2)` |
 | 选图建议 | — | ✓ 什么数据用什么图，哪些图不要用 |
 | 科研常用图的辅助函数 | — | ✓ 种子误差须、误差带、CDF p99、带数值热力图 |
 | 交付前检查 | — | ✓ Claude 会渲染出来检查遮挡和裁切 |
@@ -57,9 +58,29 @@
 git clone https://github.com/liuhao030922/academic-figure-skill.git ~/.claude/skills/paper-figures
 ```
 
-**Claude app（claude.ai）**：把仓库下载成 ZIP，然后在 Customize → Skills → Add 里上传。
+**Claude app（claude.ai）**：clone 或下载仓库，先生成目录名正确的 skill
+压缩包，再从 Plugins/Customize → Skills 上传 `dist/paper-figures.zip`：
+
+```bash
+python3 tools/package_skill.py
+```
+
+生成的 ZIP 顶层目录是与 skill 名称一致的 `paper-figures/`，符合自定义
+skill 上传器的结构要求。
+
+**Codex**
+
+```bash
+git clone https://github.com/liuhao030922/academic-figure-skill.git ~/.codex/skills/paper-figures
+```
 
 **纯 matplotlib（不用 Claude）**
+
+先安装运行依赖：
+
+```bash
+python3 -m pip install -r requirements.txt
+```
 
 ```python
 import matplotlib.pyplot as plt
@@ -113,13 +134,15 @@ save_paper(fig, "figure")  # 输出 figure.pdf
 | 一起出现的颜色 | 最难区分的一对 | 色盲下最小 ΔE | 内置的第二区分手段 |
 |---|---|---|---|
 | 方法 vs. baseline 柱子 | 蓝 / 灰 | 7.8（红色盲） | 描边、位置、图例 |
-| 折线（方法、橙、青绿） | 青绿 / 橙 | 11.4（红色盲） | 不同形状的标记 |
-| 堆叠结果（青绿、橙、灰、红） | 红 / 青绿 | 7.9（绿色盲） | 段内百分比标签、描边 |
+| 折线（方法、橙、青绿） | 蓝 / 青绿 | 8.9（蓝色盲） | 不同形状的标记 |
+| 堆叠结果（青绿、橙、灰、红） | 橙 / 红 | 7.6（蓝色盲） | 段内百分比标签、描边 |
 
 由此得出一条规则：**青绿和 baseline 灰不能出现在同一张图里**（绿色盲下 ΔE 只有 3.2）。skill 里已经写明了这条。
 下图模拟了各种色觉下看到的效果（Machado et al., 2009）：
 
 ![色盲模拟](assets/colorblind.png)
+
+运行 `python3 tools/validate_palette.py` 可以复现表中的数值。
 
 ## 仓库结构
 
@@ -129,9 +152,23 @@ paper_style.py        样式模块：会议模板、配色、辅助函数
 styles/*.mplstyle     plt.style.use() 用的预设
 examples/             bars.py、lines.py、gallery.py（全部合成数据）
 tools/build_assets.py 重新生成 README 里的所有图片
+tools/validate_palette.py 复现配色色差测量
+tools/package_skill.py 生成可直接上传的 `paper-figures.zip`
+tests/                样式、图表、输出与打包的可执行烟雾测试
+.github/workflows/    Python 3.9 / 3.11 / 3.13 CI
 ```
 
 重新生成图片：`python3 tools/build_assets.py`。
+
+在本地运行完整检查：
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 tools/build_assets.py
+```
+
+会议宽度是常见模板下的实用默认值。如果会议模板或文档类使用了特殊选项，
+投稿前请以 LaTeX 实际的 `\columnwidth` 或 `\textwidth` 为准。
 
 ## 许可证
 

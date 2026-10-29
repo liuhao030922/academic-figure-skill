@@ -13,10 +13,8 @@ Usage:
 `PAPER_RC` (the IEEE preset) still works with `plt.rc_context(PAPER_RC)`.
 """
 from dataclasses import dataclass
+from pathlib import Path
 
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from cycler import cycler
@@ -230,6 +228,8 @@ def line_with_band(axis, x, mean, low, high, color, label, marker="o"):
 def cdf_line(axis, values, color, label, marker="o", mark_quantile=0.99):
     """Empirical CDF with one marker at a tail quantile (p99 by default)."""
     ordered = np.sort(np.asarray(values))
+    if ordered.size == 0:
+        raise ValueError("cdf_line() requires at least one value")
     fraction = np.arange(1, len(ordered) + 1) / len(ordered)
     axis.plot(ordered, fraction, color=color, linewidth=1.0, label=label, zorder=2)
     if mark_quantile is not None:
@@ -286,6 +286,9 @@ def inside_legend(axis, loc="upper right"):
 
 
 def save_paper(figure, path_without_suffix):
-    """Vector PDF, tight bounding box, white background."""
-    figure.savefig(f"{path_without_suffix}.pdf", bbox_inches="tight", pad_inches=0.02, facecolor="white")
+    """Save a vector PDF, creating parent directories when needed."""
+    output = Path(f"{path_without_suffix}.pdf")
+    output.parent.mkdir(parents=True, exist_ok=True)
+    figure.savefig(output, bbox_inches="tight", pad_inches=0.02, facecolor="white")
     plt.close(figure)
+    return output

@@ -1,6 +1,6 @@
 ---
 name: paper-figures
-description: Publication-ready matplotlib figures for academic papers — venue presets (IEEE, ACM, USENIX, ICML, NeurIPS, LaTeX article) with matching serif fonts and column widths, a soft colorblind-checked palette (gray baseline / blue method), outlined bars, min–max seed whiskers, lines with uncertainty bands, CDFs, heatmaps, trade-off, ablation, time-series and box plots, vector PDF output. Use when making figures for a paper, report, thesis, or any LaTeX document, or when the user asks for "论文风格的图", "paper-style figures", "IEEE/ACM figure", or "publication-quality plot".
+description: Create, restyle, or review publication-ready Matplotlib figures for academic papers, reports, and theses. Use for requests such as "论文风格的图", "paper-style figures", "IEEE/ACM figure", or "publication-quality plot" that need venue-aware sizing, accessible styling, research chart forms, or vector PDF output. Do not use for general LaTeX editing or document tasks that do not involve figures.
 ---
 
 # Paper figures
@@ -23,12 +23,14 @@ function per form). Copy the closest one and adapt it rather than starting from 
 
 ## 1. Pick the venue
 
-- If the user hasn't said where the figure goes, infer it from their LaTeX
-  class (`IEEEtran`, `acmart`, `usenix`, `icml20xx`, `neurips_20xx`, `article`) or ask.
+- If the user has not named a venue, infer it from their LaTeX class
+  (`IEEEtran`, `acmart`, `usenix`, `icml20xx`, `neurips_20xx`, `article`). Ask
+  only when the choice materially changes the requested result; otherwise state the default used.
 - `use_venue(name)` sets the font (Times / Libertine / Computer Modern),
   font sizes and default color cycle. `figsize("column" | "text", height)` gives the
-  exact width. Include in LaTeX with `\includegraphics[width=\columnwidth]{...}`
-  (or `\textwidth`). Design at final size; never shrink a big figure in LaTeX.
+  venue-aware default width. Confirm unusual template options against the actual
+  `\columnwidth` or `\textwidth`. Design near final size and include with
+  `\includegraphics[width=\columnwidth]{...}` (or `\textwidth`).
 - Heights: 2.2 in for one panel, 3.55 in for two stacked panels (`sharex=True`,
   `hspace=0.28`), 1.45 in for a horizontal strip.
 
@@ -46,7 +48,8 @@ function per form). Copy the closest one and adapt it rather than starting from 
 | Behavior over time | line, shaded event window | `draw_timeseries` |
 | Per-method spread | box plot | `paper_boxplot` · `draw_boxplot` |
 
-Never use dual y-axes, pie charts, 3-D, or radar charts.
+Avoid dual y-axes, pie charts, 3-D, and radar charts by default. If the user
+explicitly requests one, preserve that choice and explain readability trade-offs.
 
 ## 3. Color
 
@@ -55,14 +58,15 @@ Never use dual y-axes, pie charts, 3-D, or radar charts.
   (o, s, ^, D, v). Always pass the marker so series differ without color.
 - Stacked outcomes: good `TEAL`, warning `ORANGE`, neutral `GRAY #d9d9d9`, bad `RED`;
   in-segment text `LABEL_ON_FILL`.
-- Magnitudes: `sequential_cmap()` (one-hue blue). Never a rainbow.
+- Magnitudes: prefer `sequential_cmap()` (one-hue blue) over a rainbow map.
 - Every filled mark gets the thin dark outline from `bar_style(color)`.
 - Text is ink (`INK`, `MUTED_INK`), never the series color.
 - Colorblind limits of this soft palette (checked with Machado 2009 simulation):
   never put `TEAL` and `BASELINE` gray in the same chart (ΔE 3.2 under deuteranopia);
   baseline-gray vs. method-blue is at the floor (ΔE 7.8 protan), so keep outlines,
   legends and direct labels; use at most four colored series and let markers carry the fifth.
-- New colors must pass the dataviz skill's `validate_palette.js` before use.
+- Before adding colors, run `python3 tools/validate_palette.py` and retain a
+  non-color cue for any pair below the comfortable threshold.
 
 ## 4. Axes, annotations, legend
 

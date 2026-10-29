@@ -3,13 +3,14 @@
 **English** | [简体中文](README.zh-CN.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/liuhao030922/academic-figure-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/liuhao030922/academic-figure-skill/actions/workflows/ci.yml)
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue)
 ![matplotlib 3.9+](https://img.shields.io/badge/matplotlib-3.9%2B-blue)
 ![Claude Skill](https://img.shields.io/badge/Claude-skill-d97757)
 
 Publication-ready matplotlib figures for academic papers, packaged as a **Claude skill**.
 Tell Claude what to plot; it picks the right chart, sizes it to your venue's column,
-matches the paper's font, and checks the result before handing it back.
+uses a venue-oriented serif fallback, and checks the result before handing it back.
 Works just as well as a plain Python style module without Claude.
 
 ![Before and after](assets/before_after.png)
@@ -26,7 +27,7 @@ function in [`examples/gallery.py`](examples/gallery.py) you can copy. All data 
 | | Style file only (e.g. SciencePlots) | This skill |
 |---|---|---|
 | Fonts and sizes per venue | ✓ | ✓ IEEE · ACM · USENIX · ICML · NeurIPS · article |
-| Exact column / text widths | — | ✓ `figsize("column", 2.2)` |
+| Venue-aware column / text widths | — | ✓ `figsize("column", 2.2)` |
 | Chart-form guidance | — | ✓ which chart for which data, and which never to use |
 | Helpers for research charts | — | ✓ seed whiskers, bands, CDF p99, annotated heatmaps |
 | Checks before finishing | — | ✓ Claude renders and looks for overlaps and clipping |
@@ -58,9 +59,29 @@ You can also type `/paper-figures` to call it explicitly.
 git clone https://github.com/liuhao030922/academic-figure-skill.git ~/.claude/skills/paper-figures
 ```
 
-**Claude app (claude.ai)**: download this repo as a ZIP, then Customize → Skills → Add → upload.
+**Claude app (claude.ai)**: clone or download the repo, build the correctly
+packaged skill, then upload `dist/paper-figures.zip` from Plugins/Customize → Skills:
+
+```bash
+python3 tools/package_skill.py
+```
+
+The generated ZIP contains a top-level `paper-figures/` folder matching the
+skill name, as required by the custom-skill uploader.
+
+**Codex**
+
+```bash
+git clone https://github.com/liuhao030922/academic-figure-skill.git ~/.codex/skills/paper-figures
+```
 
 **Plain matplotlib (no Claude)**
+
+Install the runtime dependencies first:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
 
 ```python
 import matplotlib.pyplot as plt
@@ -115,13 +136,15 @@ under protanopia / deuteranopia / tritanopia simulation; ≥ 8 is comfortable, 6
 | Used together | Worst pair | Worst CVD ΔE | Second cue built in |
 |---|---|---|---|
 | Method vs. baseline bars | blue / gray | 7.8 (protan) | outlines, position, legend |
-| Line series (method, orange, teal) | teal / orange | 11.4 (protan) | distinct marker shapes |
-| Stacked outcomes (teal, orange, gray, red) | red / teal | 7.9 (deutan) | in-segment % labels, outlines |
+| Line series (method, orange, teal) | blue / teal | 8.9 (tritan) | distinct marker shapes |
+| Stacked outcomes (teal, orange, gray, red) | orange / red | 7.6 (tritan) | in-segment % labels, outlines |
 
 One rule follows: **teal and baseline gray never appear in the same chart** (ΔE 3.2 under deuteranopia).
 The skill tells Claude this. The image below simulates each type of color vision (Machado et al., 2009):
 
 ![Colorblind simulation](assets/colorblind.png)
+
+Reproduce the table values with `python3 tools/validate_palette.py`.
 
 ## Repository layout
 
@@ -131,9 +154,24 @@ paper_style.py        style module: venues, colors, helpers
 styles/*.mplstyle     presets for plt.style.use()
 examples/             bars.py, lines.py, gallery.py (all synthetic data)
 tools/build_assets.py regenerates every image in this README
+tools/validate_palette.py reproduces the color-separation measurements
+tools/package_skill.py builds an upload-ready `paper-figures.zip`
+tests/                executable smoke tests for styles, charts, output and packaging
+.github/workflows/    Python 3.9 / 3.11 / 3.13 CI
 ```
 
 Regenerate the images: `python3 tools/build_assets.py`.
+
+Run the checks locally:
+
+```bash
+python3 -m unittest discover -s tests -v
+python3 tools/build_assets.py
+```
+
+The preset dimensions are practical defaults for common templates. If a venue
+or document class uses unusual options, confirm the actual LaTeX `\columnwidth`
+or `\textwidth` before final submission.
 
 ## License
 

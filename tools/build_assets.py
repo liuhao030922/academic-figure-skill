@@ -6,7 +6,10 @@ import io
 import sys
 from pathlib import Path
 
+import matplotlib
 import numpy as np
+
+matplotlib.use("Agg")
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "examples")]
