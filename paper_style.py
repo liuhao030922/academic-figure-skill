@@ -108,6 +108,19 @@ def top_legend(figure, handles, labels, ncol, top=0.9, x=0.55):
     figure.subplots_adjust(top=top)
 
 
+def line_with_band(axis, x, mean, low, high, color, label, marker="o"):
+    """Mean line with small markers over a translucent band (std, CI, or min–max)."""
+    axis.fill_between(x, low, high, color=color, alpha=0.22, linewidth=0, zorder=1)
+    axis.plot(x, mean, color=color, linewidth=1.0, marker=marker, markersize=2.2, markeredgewidth=0,
+              label=label, zorder=2)
+
+
+def inside_legend(axis, loc="upper right"):
+    """Small framed legend inside the plot area, for line charts with free space."""
+    axis.legend(loc=loc, frameon=True, fancybox=False, framealpha=0.9, edgecolor="#cccccc",
+                handlelength=1.6, borderpad=0.4, labelspacing=0.3)
+
+
 def save_paper(figure, path_without_suffix):
     """Vector PDF, tight bounding box, white background."""
     figure.savefig(f"{path_without_suffix}.pdf", bbox_inches="tight", pad_inches=0.02, facecolor="white")

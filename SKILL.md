@@ -44,12 +44,21 @@ from paper_style import *
 - Targets/thresholds: `target_line(ax, 0.90, "target 0.90", x_text)` — dashed dark line with a small label.
 - Value labels: only on the headline panel, above the whisker top. For stacked bars, label in-segment percentages only when the segment is ≥ 4.5 %; put derived totals (e.g. "TPOT miss 60%") just right of the bar.
 
+**Line charts with uncertainty bands** (metric vs. a swept parameter, many x values)
+- `line_with_band(ax, x, mean, low, high, color, label)`: 1 pt line with 2.2 pt dot markers over a translucent band (alpha 0.22). Use mean ± std across seeds, a confidence interval, or min–max, and say which in the caption.
+- Colors: method = blue `METHOD`, then baselines in order `ORANGE`, `TEAL`, `RED`, `GRAY`. Draw the method first so it tops the legend.
+- No grid (`paper_axis(ax, grid_axis=None)`), y from 0, and about 35 % headroom so the legend never covers a line.
+- Legend inside the panel: `inside_legend(ax)` (small, light frame, upper right). Side-by-side panels use `figsize=(7.0, 2.2)` with `(a)`/`(b)` titles.
+- See `example_lines.py`.
+
 **Legend**
 - Frameless, above the panels in one row: `top_legend(fig, handles, labels, ncol=3)` for multi-panel figures, or `ax.legend(ncol=4, frameon=False, loc="lower center", bbox_to_anchor=(0.5, 1.04))` for a single axis. Check that it never overlaps a panel title.
 
 ## Workflow
-1. Choose the form (grouped bars for policy × condition, stacked barh for outcome shares).
+1. Choose the form (grouped bars for policy × condition, stacked barh for outcome shares, line + band for a metric over a swept parameter).
 2. Build with the helpers above.
 3. Render the PDF and look at it (convert a page to PNG if needed) for label collisions, legend overlap, and clipped text before you finish.
 
-`example.py` in this directory draws a complete two-panel figure in this style. Run it to see a reference output.
+`example.py` (bars) and `example_lines.py` (lines with bands) draw complete reference figures from synthetic data.
+
+Never commit or publish figures made from unpublished experimental data as examples; use synthetic data.

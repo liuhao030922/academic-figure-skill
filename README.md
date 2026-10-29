@@ -1,8 +1,18 @@
 # academic-figure-skill
 
-A Claude skill for IEEE-style academic paper figures in matplotlib: STIX serif fonts at 7–8 pt, column-width sizes, a colorblind-checked soft palette (gray baseline / blue method), outlined bars, min–max seed whiskers, and vector PDF output.
+A Claude skill for IEEE-style academic paper figures in matplotlib: STIX serif fonts at 7–8 pt, column-width sizes, a colorblind-checked soft palette (gray baseline / blue method), outlined bars, min–max seed whiskers, line plots with shaded uncertainty bands, and vector PDF output.
 
-![Example figure](assets/example.png)
+## Examples
+
+All examples use synthetic data.
+
+**Lines with shaded uncertainty bands** (`example_lines.py`)
+
+![Line plot with bands](assets/example_lines.png)
+
+**Grouped bars with seed-range whiskers** (`example.py`)
+
+<img src="assets/example.png" alt="Grouped bar example" width="480">
 
 ## Contents
 
@@ -10,7 +20,8 @@ A Claude skill for IEEE-style academic paper figures in matplotlib: STIX serif f
 |---|---|
 | `SKILL.md` | Instructions Claude follows: fonts, sizes, colors, annotations, legend placement |
 | `paper_style.py` | Importable style module (`PAPER_RC`, colors, sizes, helper functions) |
-| `example.py` | Draws the reference figure above: `python3 example.py <output_dir>` |
+| `example.py` | Grouped-bar reference figure: `python3 example.py <output_dir>` |
+| `example_lines.py` | Line + band reference figure: `python3 example_lines.py <output_dir>` |
 
 ## Install
 
