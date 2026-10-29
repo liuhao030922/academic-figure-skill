@@ -1,0 +1,32 @@
+# paper-figures preset: ICML
+font.family: serif
+font.serif: STIXGeneral, Times New Roman, Times, Nimbus Roman, DejaVu Serif
+mathtext.fontset: stix
+font.size: 7.5
+axes.labelsize: 7.5
+axes.titlesize: 8.0
+axes.linewidth: 0.6
+axes.edgecolor: 3a3a3a
+axes.labelcolor: 1a1a1a
+axes.spines.top: False
+axes.spines.right: False
+axes.prop_cycle: cycler('color', ['6b9bc8', 'f4a65c', '79c0b6', 'ec7f7c', 'a6a6a6'])
+xtick.color: 3a3a3a
+ytick.color: 3a3a3a
+xtick.labelcolor: 1a1a1a
+ytick.labelcolor: 1a1a1a
+xtick.labelsize: 7.0
+ytick.labelsize: 7.0
+xtick.major.width: 0.6
+ytick.major.width: 0.6
+xtick.major.size: 2.5
+ytick.major.size: 2.5
+legend.fontsize: 7.0
+legend.frameon: False
+lines.linewidth: 1.0
+lines.markersize: 2.2
+savefig.bbox: tight
+savefig.pad_inches: 0.02
+savefig.facecolor: white
+pdf.fonttype: 42
+ps.fonttype: 42
